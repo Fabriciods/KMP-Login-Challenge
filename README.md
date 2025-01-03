@@ -1,14 +1,23 @@
-This is a Kotlin Multiplatform project targeting Android, iOS.
+# Projeto KMP Compose Multiplatform
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+Este projeto de um projeto em KMP + Compose Multiplataforma capaz de realizar login e utilizar armazenamento local.
+**Importante** Para rodar essa aplicação é necessário estar rodando a API [Login Challenge](https://github.com/Fabriciods/KMP-Login-Challenge) na porta **8080**
+caso necessite rodar em outra porta, basta ajustar os arquivos `LoginNetWorkinhImpl` da pasta android main e iOS main.
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+Projeto vou testado utilizando emuladores android e iOS
+
+## 🛠️ Recursos do projeto
+
+- **Kotlin Multiplatform (KMP)**
+- **Compose Multiplatform**
+- **Controle de estado com Compose**
+- **Injenção de dependência com koin**
+- **Consumo de API com KTOR**
+- **Armazenamento local Nativo no android(sharedPreferences) e iOS(NSUUserDefaults)**
+- **Testes Unitários**
+- ** Arquitetura MVVM**
+
+## ⚙️ Dependências e Configurações
 
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
