@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+    <string name="input_login_error">Login ou senha inválidos</string>
+    <string name="visibility_off_icon_description">Esconder senha</string>
+    <string name="visibility_on_icon_description">Mostrar senha</string>
+    <string name="bottomSheet_error_title">Houve um erro ao realizar o login, \n Tente novamente</string>
+    <string name="bottomSheet_button_text">Fechar</string>
+    <string name="home_screen_title">Bem vindo!</string>"
+    <string name="home_screen_button">Deslogar</string>"
+    <string name="login_screen_title">Bem-vindo,\n insira seus dados para realizar login</string>"
+    <string name="login_input_label">Login</string>"
+    <string name="password_input_label">Senha</string>"
+    <string name="login_button_text">Logar</string>"
+</resources>
