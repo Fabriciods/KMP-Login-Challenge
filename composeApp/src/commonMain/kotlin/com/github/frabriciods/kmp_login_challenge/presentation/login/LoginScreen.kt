@@ -15,6 +15,8 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.github.frabriciods.kmp_login_challenge.domain.model.LoginModel
+import com.github.frabriciods.kmp_login_challenge.presentation.common.ScreenState
 import com.github.frabriciods.kmp_login_challenge.presentation.common.components.InformativeBottomSheet
 import com.github.frabriciods.kmp_login_challenge.presentation.common.components.Input
 import com.github.frabriciods.kmp_login_challenge.presentation.common.components.InputType
@@ -47,13 +50,19 @@ import org.koin.compose.viewmodel.koinViewModel
 fun LoginScreen(navigateToHome: () -> Unit) {
 
     val viewModel = koinViewModel<LoginViewModel>()
-    var userName by remember { mutableStateOf(TextFieldValue(String())) }
-    var password by remember { mutableStateOf(TextFieldValue(String())) }
-    var buttonLoading by remember { mutableStateOf(false) }
-    var isError by remember { mutableStateOf(false) }
+    val screenState by viewModel.loginState.collectAsState()
     val bottomSheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
     val scope = rememberCoroutineScope()
-    val userPreferences = koinInject<UserPreferences>()
+
+    LaunchedEffect(Unit) {
+        when(screenState){
+            is ScreenState.Success -> {navigateToHome()}
+            is ScreenState.Error -> {
+                scope.launch { bottomSheetState.show() }
+            }
+            else -> {}
+        }
+    }
     MaterialTheme {
         ModalBottomSheetLayout(
             sheetContent = {
@@ -83,56 +92,29 @@ fun LoginScreen(navigateToHome: () -> Unit) {
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Input(
-                            value = userName.text,
-                            onValueChange = {
-                                userName = TextFieldValue(it)
-                                isError = false
-                            },
+                            value = viewModel.userName,
+                            onValueChange = viewModel::onUserNameChange,
                             label = stringResource(Res.string.login_input_label),
                             type = InputType.TEXT,
-                            isError = isError,
+                            isError = viewModel.isInputStateError,
 
                             )
                         Input(
-                            value = password.text,
-                            onValueChange = {
-                                password = TextFieldValue(it)
-                                isError = false
-                            },
+                            value = viewModel.userName,
+                            onValueChange = viewModel::onPasswordChange,
                             label = stringResource(Res.string.password_input_label),
                             type = InputType.PASSWORD,
-                            isError = isError
+                            isError = viewModel.isInputStateError
                         )
                     }
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            viewModel.makeLogin(LoginModel(
-                                login = userName.text,
-                                password = password.text
-                            ),
-                                handleSuccess = {
-                                    navigateToHome.invoke()
-                                    userPreferences.saveUserName(it.userName)
-                                },
-                                handleError = { error ->
-                                    handleError(
-                                        error = error,
-                                        inputErrorState = { isError = it },
-                                        isBottomSheetOpen = {
-                                            scope.launch {
-                                                bottomSheetState.show()
-                                            } }
-                                    )
-                                },
-                                toggleLoading = {
-                                    buttonLoading = !buttonLoading
-                                }
-                            )
+                            viewModel.makeLogin()
                         },
-                        enabled = userName.text.isNotBlank() && password.text.isNotBlank()
+                        enabled = viewModel.userName.isNotBlank() && viewModel.password.isNotBlank()
                     ) {
-                        if (buttonLoading) {
+                        if (viewModel.isButtonLoading) {
                             CircularProgressIndicator(
                                 color = MaterialTheme.colors.onPrimary,
                                 strokeWidth = 2.dp,
@@ -152,17 +134,4 @@ fun LoginScreen(navigateToHome: () -> Unit) {
         }
 
     }
-}
-
-private fun handleError(
-    error: BaseError,
-    inputErrorState: (Boolean) -> Unit,
-    isBottomSheetOpen: () -> Unit,
-) {
-    if (error == NetworkBaseError.UNAUTHORIZED_ERROR) {
-        inputErrorState.invoke(true)
-    } else {
-        isBottomSheetOpen.invoke()
-    }
-
 }

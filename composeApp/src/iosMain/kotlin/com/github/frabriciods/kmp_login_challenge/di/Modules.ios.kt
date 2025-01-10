@@ -45,7 +45,8 @@ actual val targetModule = module {
 
     viewModel {
         LoginViewModel(
-            loginUseCase = get()
+            loginUseCase = get(),
+            userPreferences = get()
         )
     }
 }
